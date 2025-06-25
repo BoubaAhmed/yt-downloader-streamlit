@@ -2,6 +2,7 @@ import streamlit as st
 from pytubefix import YouTube
 from pytubefix.cli import on_progress
 import datetime
+import os
 
 st.set_page_config(page_title="YouTube Video Downloader", page_icon="🎬", layout="centered")
 
@@ -119,12 +120,31 @@ if url:
         # --- Download Section ---
         st.markdown("### 🎞️ Download Video")
         stream = yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first()
+        # if stream:
+        #     st.markdown(f"**Highest Resolution Available:** <span style='color:#0077ff'>{stream.resolution}</span>", unsafe_allow_html=True)
+        #     if st.button("⬇️ Download Video", key="dl", help="Download video in highest available resolution", type="primary"):
+        #         with st.spinner("Downloading..."):
+        #             stream.download()
+        #         st.success("Download completed!")
+        # else:
+        #     st.error("No downloadable video streams found.")
+
         if stream:
             st.markdown(f"**Highest Resolution Available:** <span style='color:#0077ff'>{stream.resolution}</span>", unsafe_allow_html=True)
-            if st.button("⬇️ Download Video", key="dl", help="Download video in highest available resolution", type="primary"):
-                with st.spinner("Downloading..."):
-                    stream.download()
-                st.success("Download completed!")
+            if st.button("⬇️ Prepare Download", key="dl", help="Prepare video for downloading", type="primary"):
+                with st.spinner("Preparing video..."):
+                    filename = stream.default_filename
+                    stream.download(filename=filename)
+                    with open(filename, "rb") as f:
+                        video_bytes = f.read()
+                    st.success("Download ready! Click below to save to your device.")
+                    st.download_button(
+                        label="Download Video File",
+                        data=video_bytes,
+                        file_name=filename,
+                        mime="video/mp4"
+                    )
+                    os.remove(filename)
         else:
             st.error("No downloadable video streams found.")
 
