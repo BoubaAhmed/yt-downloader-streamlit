@@ -86,14 +86,18 @@ st.markdown('<div class="main-card">', unsafe_allow_html=True)
 st.markdown('<div style="text-align:center"><span class="yt-title">🎬 YouTube Video Downloader</span><br><span style="color:#888;font-size:1.1rem;">Paste a YouTube URL and download your favorite content in style!</span></div>', unsafe_allow_html=True)
 st.write("")
 
-url = st.text_input(
-    "YouTube Video URL",
-    placeholder="Paste YouTube URL here...",
-    help="Paste the full link, e.g. https://www.youtube.com/watch?v=...",
-    label_visibility="collapsed"
-)
+col1, col2 = st.columns([3, 1])
+with col1:
+    url = st.text_input(
+        "YouTube Video URL",
+        placeholder="Paste YouTube URL here...",
+        help="Paste the full link, e.g. https://www.youtube.com/watch?v=...",
+        label_visibility="collapsed"
+    )
+with col2:
+    search = st.button("🔍 Search")
 
-if url:
+if search and url:
     try:
         yt = YouTube(url, on_progress_callback=on_progress)
         # --- Video Details Card ---
